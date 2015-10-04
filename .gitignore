@@ -7,3 +7,10 @@ pom.xml.asc
 *.class
 /.lein-*
 /.nrepl-port
+.hgignore
+.hg/
+
+profiles.clj
+
+docker-compose.yml
+log4j.properties

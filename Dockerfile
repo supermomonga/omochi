@@ -1,12 +1,16 @@
 FROM gfredericks/leiningen
 MAINTAINER supermomonga
 
-COPY ./ /app
 
+RUN mkdir /app
+COPY ./project.clj /app/project.clj
 WORKDIR /app
+RUN lein deps
+
+COPY ./ /app
 
 RUN lein uberjar
 
 EXPOSE 8080
 
-CMD java -cp target/omochi-standalone.jar clojure.main -m omochi.core --name omochi --adapter slack
+CMD lein run
