@@ -4,14 +4,20 @@
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]))
 
+(defn yamabiko
+  [{:keys [channel user text]}]
+  (emit! :slacker.client/send-message channel
+         (format "<@%s>: " user text)))
+
 (defn ping-pong
   "ping-pong"
-  [{:keys [channel text]}]
+  [{:keys [channel user text]}]
   (when (= text "ping")
    (emit! :slacker.client/send-message channel "pong")))
 
 (defn run []
   (handle :message ping-pong)
+  (handle :message yamabiko)
   (if-let [api-token (env :slack-api-token)]
     (do
       (log/info "Omochi started.")
