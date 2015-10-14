@@ -1,6 +1,6 @@
-(ns sample-slacker-pingpong.core-test
+(ns omochi.core-test
   (:require [clojure.test :refer :all]
-            [sample-slacker-pingpong.core :refer :all]))
+            [omochi.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."

@@ -1,4 +1,4 @@
-(ns sample-slacker-pingpong.core
+(ns omochi.core
   (:require [clojure.string :refer [lower-case]]
             [slacker.client :refer [emit! await! handle with-stacktrace-log] :as s]
             [clojure.tools.logging :as log]

@@ -1,4 +1,4 @@
-(defproject sample-slacker-pingpong "0.1.0-SNAPSHOT"
+(defproject omochi "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -10,4 +10,4 @@
   :plugins [[lein-environ "1.0.0"]]
   :profiles {:uberjar {:aot :all}}
   :bootclasspath true
-  :main sample-slacker-pingpong.core)
+  :main omochi.core)
