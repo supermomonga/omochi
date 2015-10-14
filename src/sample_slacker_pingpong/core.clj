@@ -6,8 +6,9 @@
 
 (defn yamabiko
   [{:keys [channel user text]}]
-  (emit! :slacker.client/send-message channel
-         (format "<@%s>: " user text)))
+  (when-let [text (last (re-find #"!yamabiko (.+)" text))]
+    (emit! :slacker.client/send-message channel
+           (format "<@%s>: %s" user text))))
 
 (defn ping-pong
   "ping-pong"
