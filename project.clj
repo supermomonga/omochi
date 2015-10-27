@@ -7,6 +7,7 @@
                  [emiln/slacker "1.5.1"]
                  [environ "1.0.0"]
                  [cheshire "5.5.0"]
+                 [clojail "1.0.6"]
                  [robert/hooke "1.3.0"]]
   :plugins [[lein-environ "1.0.0"]]
   :profiles {:uberjar {:aot :all}}
