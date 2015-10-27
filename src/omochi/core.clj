@@ -12,24 +12,28 @@
     (emit! :slacker.client/send-message channel
            (format "<@%s>: %s" user text))))
 
-(defn ping-pong
-  "ping-pong"
+(defn simple-matcher
   [{:keys [channel user text]}]
-  (when (= text "ping")
-   (emit! :slacker.client/send-message channel "pong")))
-
-(defn ppp
-  [{:keys [channel user text]}]
-  (when-let [text (last (re-find #"ppp" text))]
-    (emit! :slacker.client/send-message channel "PonPonPain")))
+  (when-let [res (condp = text
+                   "ping"       "pong"
+                   "!ppp"       "PonPonPain"
+                   "!b"         "便利"
+                   "!bs"        "便利そう"
+                   "!f"         "不便"
+                   "!fs"        "不便そう"
+                   "!no"        "http://d.pr/i/15zJh.png"
+                   "ぬるオーラ" "http://d.pr/i/15zJh.png"
+                   nil
+                   )]
+    (emit! :slacker.client/send-message channel res)))
 
 (defn idols []
   (-> "id2hash.json" io/resource io/reader))
 
 (defn run []
-  (handle :message ppp)
-  (handle :message ping-pong)
+  (handle :message simple-matcher)
   (handle :message yamabiko)
+  (handle :message eval-clojure)
   (if-let [api-token (env :slack-api-token)]
     (do
       (log/info "Omochi started.")
