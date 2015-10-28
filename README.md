@@ -2,6 +2,13 @@
 
 A slack bot written in Clojure to provide benri features.
 
+## Features & Status
+
+- [X] simple pattern responder
+- [X] eval clojure code
+- [ ] CINDERELLA GIRLS profile search
+- [ ] quickhelp
+
 ## Usage
 
 ### Leiningen
