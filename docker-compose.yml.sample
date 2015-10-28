@@ -1,0 +1,4 @@
+jubot:
+  build: .
+  environment:
+    SLACK_API_TOKEN: your-api-token-here
