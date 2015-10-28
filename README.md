@@ -14,7 +14,8 @@ A slack bot written in Clojure to provide benri features.
 ### Leiningen
 
 1. Create `profiles.clj`. `profiles.clj.sample` may helps you.
-2. `lein run`
+2. Create `.java.policy` file into your home directory. `.java.policy.sample` may helps you.
+3. `lein run`
 
 ### Docker compose
 
