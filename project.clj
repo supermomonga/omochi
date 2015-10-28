@@ -1,8 +1,8 @@
 (defproject omochi "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :description "A benri slack bot"
+  :url "http://github.com/supermomonga/omochi"
+  :license {:name "MIT License"
+            :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [emiln/slacker "1.5.1"]
                  [environ "1.0.0"]
