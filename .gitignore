@@ -14,3 +14,4 @@ profiles.clj
 
 docker-compose.yml
 log4j.properties
+omochi-pod.json
