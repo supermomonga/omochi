@@ -63,14 +63,15 @@
 (defn simple-matcher
   [{:keys [channel user text]}]
   (when-let [res (condp = text
-                   "ping"       "pong"
-                   "!ppp"       "PonPonPain"
-                   "!b"         "便利"
-                   "!bs"        "便利そう"
-                   "!f"         "不便"
-                   "!fs"        "不便そう"
-                   "!no"        "http://d.pr/i/15zJh.png"
-                   "ぬるオーラ" "http://d.pr/i/15zJh.png"
+                   "ping"         "pong"
+                   "!ppp"         "PonPonPain"
+                   "!b"           "便利"
+                   "!bs"          "便利そう"
+                   "!f"           "不便"
+                   "!fs"          "不便そう"
+                   "!no"          "http://d.pr/i/15zJh.png"
+                   "ぬるオーラ"   "http://d.pr/i/15zJh.png"
+                   "行けたら行く" "http://d.pr/i/11Q6l.png"
                    nil
                    )]
     (emit! :slacker.client/send-message channel res)))
