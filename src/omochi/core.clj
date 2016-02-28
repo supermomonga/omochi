@@ -57,7 +57,7 @@
 (defn yamabiko
   [{:keys [channel user text]}]
   (if text
-    (when-let [text (last (re-find #"!yamabiko (.+)"))]
+    (when-let [text (last (re-find #"!yamabiko (.+)" text))]
       (emit! :slacker.client/send-message channel
              (format "<@%s>: %s" user text)))))
 
