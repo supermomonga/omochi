@@ -73,6 +73,8 @@
                    "!no"          "http://d.pr/i/15zJh.png"
                    "ぬるオーラ"   "http://d.pr/i/15zJh.png"
                    "行けたら行く" "http://d.pr/i/11Q6l.png"
+                   "!snttm"       "http://d.pr/i/11H8B.png"
+                   "汁なし担々麺" "http://d.pr/i/11H8B.png"
                    nil
                    )]
     (emit! :slacker.client/send-message channel res)))
