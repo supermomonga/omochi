@@ -82,10 +82,7 @@
 (defn idols []
   (-> "id2hash.json" io/resource io/reader))
 
-(defn run []
-  (handle :message simple-matcher)
-  (handle :message yamabiko)
-  (handle :message eval-clojure)
+(defn connect []
   (if-let [api-token (env :slack-api-token)]
     (do
       (log/info "Omochi started.")
@@ -93,6 +90,14 @@
       (println (clojure.core.async/<!! (slacker.client/emit-with-feedback! :add 1 2 3)))
       (await! :slacker.client/bot-disconnected))
     (log/error "You need to set environment variable `SLACK_API_TOKEN`.")))
+
+(defn run []
+  (handle :message simple-matcher)
+  (handle :message yamabiko)
+  (handle :message eval-clojure)
+  (handle ::websocket-closed (fn [& args] (log/warn args) (connect)))
+  (handle ::websocket-errored (fn [& args] (log/error args) (connect)))
+  (connect))
 
 (defn -main
   [& args]
