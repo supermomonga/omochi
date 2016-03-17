@@ -87,7 +87,6 @@
     (do
       (log/info "Omochi started.")
       (emit! :slacker.client/connect-bot api-token)
-      (println (clojure.core.async/<!! (slacker.client/emit-with-feedback! :add 1 2 3)))
       (await! :slacker.client/bot-disconnected))
     (log/error "You need to set environment variable `SLACK_API_TOKEN`.")))
 
