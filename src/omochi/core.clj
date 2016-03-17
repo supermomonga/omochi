@@ -94,8 +94,8 @@
   (handle :message simple-matcher)
   (handle :message yamabiko)
   (handle :message eval-clojure)
-  (handle ::websocket-closed (fn [& args] (log/warn args) (connect)))
-  (handle ::websocket-errored (fn [& args] (log/error args) (connect)))
+  (handle :websocket-closed (fn [& args] (log/warn args) (connect)))
+  (handle :websocket-errored (fn [& args] (log/error args) (connect)))
   (connect))
 
 (defn -main
