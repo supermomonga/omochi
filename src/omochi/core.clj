@@ -46,7 +46,9 @@
 
 (defn eval-clojure
   [{:keys [channel user text]}]
-  (when (sexp? text)
+  (when (and
+         (= \( (first text))
+         (sexp? text))
     (when-let [response
                (let [result (eval-request text)]
                  (or (-> result :result last)
