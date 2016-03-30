@@ -44,7 +44,7 @@
     (and (sequential? expr)
          (not (string? expr)))))
 
-(defn eval-clojure
+(defn handler-eval-clojure
   [{:keys [channel user text]}]
   (when (and
          (= \( (first text))
@@ -56,30 +56,37 @@
       (emit! :slacker.client/send-message channel
              (format "```%s```" response)))))
 
-(defn yamabiko
+(defn handler-yamabiko
   [{:keys [channel user text]}]
   (if text
     (when-let [text (last (re-find #"!yamabiko (.+)" text))]
       (emit! :slacker.client/send-message channel
              (format "<@%s>: %s" user text)))))
 
-(defn simple-matcher
+(def simple-matcher-rules
+  {#"^ping"                      "pong"
+   #"^目の錯覚(って怖いねん)?"   "http://i.gyazo.com/552f4577e9bb63c18766a705fc63f553.jpg"
+   #"^目の錯覚(って怖いですね)?" "http://i.gyazo.com/4383943b54188d8bcf185456516186b8.jpg"
+   #"^!ppp"                      "PonPonPain"
+   #"^!b"                        "便利"
+   #"^!bs"                       "便利そう"
+   #"^!f"                        "不便"
+   #"^!fs"                       "不便そう"
+   #"^!no"                       "http://d.pr/i/15zJh.png"
+   #"^ぬるオーラ"                "http://d.pr/i/15zJh.png"
+   #"^行けたら行く"              "http://d.pr/i/11Q6l.png"
+   #"^!snttm"                    "http://d.pr/i/11H8B.png"
+   #"^汁なし担々麺"              "http://d.pr/i/11H8B.png"})
+
+(defn simple-matcher [text rules]
+  (first (when-let  [rules (filter #(-> % key (re-find text)) rules) ]
+           (shuffle rules))))
+
+(defn handler-simple-matcher
   [{:keys [channel user text]}]
-  (when-let [res (condp = text
-                   "ping"         "pong"
-                   "!ppp"         "PonPonPain"
-                   "!b"           "便利"
-                   "!bs"          "便利そう"
-                   "!f"           "不便"
-                   "!fs"          "不便そう"
-                   "!no"          "http://d.pr/i/15zJh.png"
-                   "ぬるオーラ"   "http://d.pr/i/15zJh.png"
-                   "行けたら行く" "http://d.pr/i/11Q6l.png"
-                   "!snttm"       "http://d.pr/i/11H8B.png"
-                   "汁なし担々麺" "http://d.pr/i/11H8B.png"
-                   nil
-                   )]
-    (emit! :slacker.client/send-message channel res)))
+  (when-let [rule (simple-matcher text simple-matcher-rules)]
+    (print rule)
+    (emit! :slacker.client/send-message channel (val rule))))
 
 (defn idols []
   (-> "id2hash.json" io/resource io/reader))
@@ -93,9 +100,9 @@
     (log/error "You need to set environment variable `SLACK_API_TOKEN`.")))
 
 (defn run []
-  (handle :message simple-matcher)
-  (handle :message yamabiko)
-  (handle :message eval-clojure)
+  (handle :message handler-simple-matcher)
+  (handle :message handler-yamabiko)
+  (handle :message handler-eval-clojure)
   (handle :websocket-closed (fn [& args] (log/warn args) (connect)))
   (handle :websocket-errored (fn [& args] (log/error args) (connect)))
   (connect))
