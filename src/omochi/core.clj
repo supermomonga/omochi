@@ -78,15 +78,24 @@
    #"^!snttm"                     "http://d.pr/i/11H8B.png"
    #"^汁なし担々麺"               "http://d.pr/i/11H8B.png"})
 
+(defn append-timestamp [url]
+  (str url "?" (System/currentTimeMillis)))
+
+(defn ensure-fresh-image [url]
+  (if (re-find #"\.(jpg|jpeg|png|gif)$" url)
+    (append-timestamp url)
+    url))
+
 (defn simple-matcher [text rules]
-  (first (when-let  [rules (filter #(-> % key (re-find text)) rules) ]
-           (shuffle rules))))
+  (when text
+    (let [rules (filter #(-> % key (re-find text)) rules) ]
+      (when (not (empty? rules))
+        (-> rules shuffle first val ensure-fresh-image)))))
 
 (defn handler-simple-matcher
   [{:keys [channel user text]}]
-  (when-let [rule (simple-matcher text simple-matcher-rules)]
-    (print rule)
-    (emit! :slacker.client/send-message channel (val rule))))
+  (when-let [res (simple-matcher text simple-matcher-rules)]
+    (emit! :slacker.client/send-message channel res)))
 
 (defn idols []
   (-> "id2hash.json" io/resource io/reader))
