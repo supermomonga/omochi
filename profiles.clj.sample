@@ -1,1 +1,0 @@
-{:dev {:env {:slack-api-token "your-api-token-here"}}}
