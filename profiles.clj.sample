@@ -1,1 +1,2 @@
-{:dev {:env {:slack-api-token "your-api-token-here"}}}
+{:dev {:env {:slack-api-token "your-api-token-here"
+             :bot-id "U0000000"}}}
