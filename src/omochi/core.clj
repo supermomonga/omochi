@@ -11,6 +11,18 @@
   (:import java.io.StringWriter
            java.util.concurrent.TimeoutException))
 
+(defn mention-to? [id text]
+  (when-let [[_ to] (re-find #"^<@([^>]+)>:?\s+" text) ]
+    (= to id)))
+
+(defn handler-emit-event
+  [{:keys [channel user text]}]
+  (if (and text (mention-to? (env :bot-id) text))
+    (when-let [event (second (re-find #"^<@[^>]+>:?\s+emit!\s+(.+)$" text)) ]
+      (emit! :slacker.client/send-message channel
+             (format "OK, I'll emit `%s` event." event))
+      (emit! (keyword "slacker.client" event)))))
+
 (defn eval-form [form sbox]
   (with-open [out (StringWriter.)]
     (let [result (sbox form {#'*out* out})]
@@ -90,7 +102,7 @@
   (when text
     (let [rules (filter #(-> % key (re-find text)) rules) ]
       (when (not (empty? rules))
-        (-> rules shuffle first val ensure-fresh-image)))))
+        (-> rules rand-nth val ensure-fresh-image)))))
 
 (defn handler-simple-matcher
   [{:keys [channel user text]}]
@@ -103,17 +115,23 @@
 (defn connect []
   (if-let [api-token (env :slack-api-token)]
     (do
-      (log/info "Omochi started.")
+      (log/info "Establish connection.")
       (emit! :slacker.client/connect-bot api-token)
-      (await! :slacker.client/bot-disconnected))
+      (log/info "Wait for bot disconnect.")
+      (await! :slacker.client/bot-disconnected)
+      (log/warn "Bot disconnected.")
+      (connect))
     (log/error "You need to set environment variable `SLACK_API_TOKEN`.")))
 
 (defn run []
+  (log/info "Omochi started.")
   (handle :message handler-simple-matcher)
   (handle :message handler-yamabiko)
   (handle :message handler-eval-clojure)
-  (handle :websocket-closed (fn [& args] (log/warn args) (connect)))
-  (handle :websocket-errored (fn [& args] (log/error args) (connect)))
+  (handle :message handler-emit-event)
+  (handle :websocket-closed (fn [& args] (log/warn args)))
+  (handle :bot-disconnected (fn [& args] (log/warn args)))
+  (handle :websocket-errored (fn [& args] (log/error args)))
   (connect))
 
 (defn -main
