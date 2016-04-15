@@ -3,7 +3,7 @@
   :url "http://github.com/supermomonga/omochi"
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [emiln/slacker "1.5.1"]
                  [environ "1.0.0"]
                  [cheshire "5.5.0"]
