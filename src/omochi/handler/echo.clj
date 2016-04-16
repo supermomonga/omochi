@@ -75,7 +75,7 @@
      "`!echo create [name] [pattern] [response]`"
      "*name*: 一意の反応パターン名を指定します"
      "*pattern*: パターンを正規表現で指定します"
-     "*response*: 返答の内容を指定します。 `\N` はN番目のグルーピングに置換されます。"
+     "*response*: 返答の内容を指定します。 `\\N` はN番目のグルーピングに置換されます。"
      "例:point_right: `!echo create test1 ^ping$ pong`"
      "例:point_right: `!echo create test2 ^hello$ world`")))
 
