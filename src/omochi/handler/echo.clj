@@ -11,6 +11,10 @@
 (defn db-init []
   (dbc/execute! db ["CREATE TABLE IF NOT EXISTS `patterns` (name text PRIMARY KEY NOT NULL,pattern text NOT NULL,response text NOT NULL);"]))
 
+(defn normalize-slack-formatted-urls
+  [text]
+  (and text (clojure.string/replace text #"<(https?:\/\/[^>]+?)>" #(last %1))))
+
 (defn parse-args [text]
   (when text
     (or
@@ -176,7 +180,7 @@
              ":small_blue_diamond:*name:* `%s`\n"
              ":small_blue_diamond:*pattern:* `%s`\n"
              ":small_blue_diamond:*response:* `%s`\n"
-             ":small_blue_diamond:*command for update:*\n`!echo update %s %s %s`"
+             ":small_blue_diamond:*command for update:*\n```!echo update %s %s %s```"
              )
             name pattern response name pattern response)))
 
@@ -232,10 +236,23 @@
 (defn handler
   [{:keys [channel user text]}]
   (db-init)
-  (if-let [{:keys [action name pattern response message help-topic]} (parse-args text)]
-    (when-let [res (apply-crud! action name pattern response message help-topic)]
-      (emit! :slacker.client/send-message channel (str res)))
-    (let [patterns (shuffle (dbc/query db ["SELECT * FROM `patterns`"]))]
-      (when-let [match (find-by-pattern text patterns)]
-        (emit! :slacker.client/send-message channel (:response match))))))
+  (when (and text
+             (util/user-id? user))
+    (if-let [{:keys [action name pattern response message help-topic]} (parse-args text)]
+      (when-let [res (apply-crud!
+                      action
+                      name
+                      (normalize-slack-formatted-urls pattern)
+                      (normalize-slack-formatted-urls response)
+                      (normalize-slack-formatted-urls message)
+                      help-topic)]
+        (emit! :slacker.client/send-message channel (str res)))
+      (let [patterns (shuffle (dbc/query db ["SELECT * FROM `patterns`"]))]
+        (when-let [match (find-by-pattern text patterns)]
+          (emit! :slacker.client/send-message channel (util/ensure-fresh-image (:response match))))))))
+
+
+
+
+
 
