@@ -2,11 +2,13 @@
   "Echo handler"
   (:require [omochi.util :as util]
             [clojure.tools.logging :as log]
+            [environ.core :refer [env]]
             [slacker.client :refer [emit!]]
             [clojure.java.jdbc :as dbc]))
 
 (def db {:subprotocol "sqlite"
-         :subname "target/echo.sqlite"})
+         :subname (or (env :echo-db-path)
+                      "target/echo.sqlite")})
 
 (defn db-init []
   (dbc/execute! db ["CREATE TABLE IF NOT EXISTS `patterns` (name text PRIMARY KEY NOT NULL,pattern text NOT NULL,response text NOT NULL);"]))
