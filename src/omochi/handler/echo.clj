@@ -75,7 +75,7 @@
      "`!echo create [name] [pattern] [response]`"
      "*name*: 一意の反応パターン名を指定します"
      "*pattern*: パターンを正規表現で指定します"
-     "*response*: 返答の内容を指定します"
+     "*response*: 返答の内容を指定します。 `\N` はN番目のグルーピングに置換されます。"
      "例:point_right: `!echo create test1 ^ping$ pong`"
      "例:point_right: `!echo create test2 ^hello$ world`")))
 
@@ -224,6 +224,15 @@
     (when (dbc/delete! db :patterns ["name = ?" name])
       (format ":ok: `%s` deleted." name))))
 
+(defn response-for
+  [pattern text]
+  (let [{:keys [pattern response]} pattern]
+    (let [matches (re-find (re-pattern pattern) text)]
+      (clojure.string/replace response
+                              #"\\(\d+)"
+                              #(let [index (read-string (last %))]
+                                 (nth matches index (str "\\" index)))))))
+
 (defn apply-crud!
   [action name pattern response message help-topic]
   (condp = (keyword action)
@@ -251,7 +260,19 @@
         (emit! :slacker.client/send-message channel (str res)))
       (let [patterns (shuffle (dbc/query db ["SELECT * FROM `patterns`"]))]
         (when-let [match (find-by-pattern text patterns)]
-          (emit! :slacker.client/send-message channel (util/ensure-fresh-image (:response match))))))))
+          (emit! :slacker.client/send-message channel
+                 (util/ensure-fresh-image
+                  (response-for match text))))))))
+
+
+
+
+
+
+
+
+
+
 
 
 
