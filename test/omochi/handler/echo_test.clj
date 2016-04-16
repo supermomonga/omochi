@@ -5,6 +5,7 @@
 (def p1 {:name "name1" :pattern "pattern1" :response "response1"})
 (def p2 {:name "name2" :pattern "pattern2" :response "response2"})
 (def p3 {:name "name3" :pattern "I am (\\w+)\\." :response "Hi, \\1!"})
+(def nj {:name "nj" :pattern "[Nn]ick\\s?[Jj]aguar" :response "nick_jaguar"})
 
 (deftest format-pattern-test
   (testing "format pattern"
@@ -50,5 +51,8 @@
            "response1")))
   (testing "regex"
     (is (= (h/response-for p3 "I am John.")
-           "Hi, John!"))))
+           "Hi, John!")))
+  (testing "Nick Jaguar"
+    (is (= (h/response-for nj "Nick Jaguar")
+           "nick_jaguar"))))
 

@@ -13,9 +13,23 @@
 (defn db-init []
   (dbc/execute! db ["CREATE TABLE IF NOT EXISTS `patterns` (name text PRIMARY KEY NOT NULL,pattern text NOT NULL,response text NOT NULL);"]))
 
+(defn normalize-slack-formatted-escapes
+  [text]
+  (and text
+       (-> text
+           (clojure.string/replace "&lt;" "<")
+           (clojure.string/replace "&gt;" ">"))))
+
 (defn normalize-slack-formatted-urls
   [text]
   (and text (clojure.string/replace text #"<(https?:\/\/[^>]+?)>" #(last %1))))
+
+(defn normalize-slack-format
+  [text]
+  (and text
+       (-> text
+           normalize-slack-formatted-urls
+           normalize-slack-formatted-escapes)))
 
 (defn parse-args [text]
   (when text
@@ -253,9 +267,9 @@
       (when-let [res (apply-crud!
                       action
                       name
-                      (normalize-slack-formatted-urls pattern)
-                      (normalize-slack-formatted-urls response)
-                      (normalize-slack-formatted-urls message)
+                      (normalize-slack-format pattern)
+                      (normalize-slack-format response)
+                      (normalize-slack-format message)
                       help-topic)]
         (emit! :slacker.client/send-message channel (str res)))
       (let [patterns (shuffle (dbc/query db ["SELECT * FROM `patterns`"]))]
@@ -263,19 +277,4 @@
           (emit! :slacker.client/send-message channel
                  (util/ensure-fresh-image
                   (response-for match text))))))))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
