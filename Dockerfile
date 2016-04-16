@@ -10,8 +10,4 @@ COPY ./ /app
 
 COPY ./.java.policy /root/.java.policy
 
-RUN lein uberjar
-
-EXPOSE 8080
-
 CMD lein run
