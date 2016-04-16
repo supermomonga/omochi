@@ -24,11 +24,11 @@
        (zipmap [:action :help-topic] (concat (rest match) '("default"))))
      (when-let [match (re-find #"^!echo[- ](help) (create|update|show|list|find|delete|all)" text)]
        (zipmap [:action :help-topic] (rest match)))
-     (when-let [match (re-find #"^!echo[- ](create|update) ([^\s]+) ([^\s]+) (.+)" text)]
+     (when-let [match (re-find #"(?s)^!echo[- ](create|update) ([^\s]+) ([^\s]+) (.+)" text)]
        (zipmap [:action :name :pattern :response] (rest match)))
-     (when-let [match (re-find #"^!echo[- ](show|delete) ([^\s]+)" text)]
+     (when-let [match (re-find #"^!echo[- ](show|delete) ([^ ]+)" text)]
        (zipmap [:action :name] (rest match)))
-     (when-let [match (re-find #"^!echo[- ](find) ([^\s]+)" text)]
+     (when-let [match (re-find #"(?s)^!echo[- ](find) (.+)" text)]
        (zipmap [:action :message] (rest match)))
      (when-let [match (re-find #"^!echo[- ](list)" text)]
        (zipmap [:action] (rest match))))))
