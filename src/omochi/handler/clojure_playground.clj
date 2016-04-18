@@ -1,6 +1,7 @@
 (ns omochi.handler.clojure-playground
   "Handler to eval clojure code"
   (:require [omochi.util :as util]
+            [clojure.tools.logging :as log]
             [slacker.client :refer [emit!]]
             [clojail.testers :refer [secure-tester-without-def blanket secure-tester]]
             [clojail.core :refer [sandbox]]
@@ -41,15 +42,21 @@
     (and (sequential? expr)
          (not (string? expr)))))
 
+(defn should-eval? [text]
+  (and
+   (= \( (first text))
+   (sexp? text)))
+
 
 (defn handler
   [{:keys [channel user text]}]
-  (when (and
-         (= \( (first text))
-         (sexp? text))
-    (when-let [response
-               (let [result (eval-request text)]
-                 (or (-> result :result last)
-                     result))]
-      (emit! :slacker.client/send-message channel
-             (format "```%s```" response)))))
+  (when (should-eval? text)
+    (let [{expr :expr error :error message :message [stdout result] :result} (eval-request text)]
+      (let [stdout (str stdout)]
+        (if (and (not (empty? stdout)) result)
+          (emit! :slacker.client/send-message channel (format "```%s\n=> %s```" stdout result)))
+        (if (and (empty? stdout) result)
+          (emit! :slacker.client/send-message channel (format "```%s```" result)))
+        (if (and error message)
+          (emit! :slacker.client/send-message channel (format ":warning:Error: `%s`" message)))))))
+
