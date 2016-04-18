@@ -54,9 +54,24 @@
     (let [{expr :expr error :error message :message [stdout result] :result} (eval-request text)]
       (let [stdout (if (empty? (str stdout)) nil stdout)]
         (when-let [text
-                   (cond
-                     (and stdout result) (format "```%s\n=> %s```" stdout result)
-                     (or stdout result) (format "```%s```" (or stdout result))
-                     (and error message) (format ":warning: `%s`" message))]
+                   (if (and error message)
+                     (format ":warning: `%s`" message)
+                     (clojure.string/join "\n" (remove
+                                                nil?
+                                                [(when stdout (format "```%s```" stdout))
+                                                 (format ":point_right: `%s`" (or result "nil"))])))]
           (emit! :slacker.client/send-message channel text))))))
+
+
+
+
+
+
+
+
+
+
+
+
+
 
