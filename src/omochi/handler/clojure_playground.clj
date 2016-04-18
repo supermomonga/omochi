@@ -52,11 +52,11 @@
   [{:keys [channel user text]}]
   (when (should-eval? text)
     (let [{expr :expr error :error message :message [stdout result] :result} (eval-request text)]
-      (let [stdout (str stdout)]
-        (if (and (not (empty? stdout)) result)
-          (emit! :slacker.client/send-message channel (format "```%s\n=> %s```" stdout result)))
-        (if (and (empty? stdout) result)
-          (emit! :slacker.client/send-message channel (format "```%s```" result)))
-        (if (and error message)
-          (emit! :slacker.client/send-message channel (format ":warning:Error: `%s`" message)))))))
+      (let [stdout (if (empty? (str stdout)) nil stdout)]
+        (when-let [text
+                   (cond
+                     (and stdout result) (format "```%s\n=> %s```" stdout result)
+                     (or stdout result) (format "```%s```" (or stdout result))
+                     (and error message) (format ":warning: `%s`" message))]
+          (emit! :slacker.client/send-message channel text))))))
 
