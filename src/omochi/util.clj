@@ -3,7 +3,7 @@
 
 
 (defn append-timestamp [url]
-  (str url "?" (System/currentTimeMillis)))
+  (str url "#" (System/currentTimeMillis)))
 
 (defn ensure-fresh-image [text]
   (and text
