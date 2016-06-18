@@ -9,13 +9,7 @@
 
 (defn connect []
   (if-let [api-token (env :slack-api-token)]
-    (do
-      (log/info "Establish connection.")
-      (emit! :slacker.client/connect-bot api-token)
-      (log/info "Wait for bot disconnect.")
-      (await! :slacker.client/bot-disconnected)
-      (log/warn "Bot disconnected.")
-      (connect))
+    (emit! :slacker.client/connect-bot api-token)
     (log/error "You need to set environment variable `SLACK_API_TOKEN`.")))
 
 (defn run []
@@ -27,6 +21,7 @@
   (handle :websocket-closed (fn [& args] (log/warn args)))
   (handle :bot-disconnected (fn [& args] (log/warn args)))
   (handle :websocket-errored (fn [& args] (log/error args)))
+  (handle :bot-disconnected connect) ;; Auto reconnect
   (connect))
 
 (defn -main
