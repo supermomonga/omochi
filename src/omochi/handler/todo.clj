@@ -160,7 +160,7 @@
         (set-active-todo-cursor channel 0)
         (let [message (list-message channel)
               {ok :ok channel :channel ts :ts}
-              (chat/post-message @util/conn channel message)]
+              (chat/post-message @util/conn channel message {:as_user "true"})]
           (when ok
             (set-active-message-ts channel ts)
             (add-action-buttons @util/token channel ts))))
@@ -190,28 +190,26 @@
   (when (not (= user (util/bot-id)))
     (let [user-name (:name (util/user-by :id user))]
       (if (= ts (get-active-message-ts channel))
-      (case reaction
-        "arrow_up_small"
-        (do (decrement-active-todo-cursor channel (get-active-todolist channel))
-            (update-list-handler channel))
-        "arrow_down_small"
-        (do (increment-active-todo-cursor channel (get-active-todolist channel))
-            (update-list-handler channel))
-        "white_large_square"
-        (do (undone-active-todo channel (get-active-todolist channel))
-            (update-list-handler channel))
-        "ballot_box_with_check"
-        (do (done-active-todo channel (get-active-todolist channel))
-            (update-list-handler channel))
-        "negative_squared_cross_mark"
-        (do (discard-changes channel user-name)
-            (update-list-handler channel))
-        "white_check_mark"
-        (do (apply-changes channel user-name (get-active-todolist channel))
-            (update-list-handler channel))
-        nil)
-      (emit! :slacker.client/send-message channel
-             (format ":warning: You can only control latest todo list."))))))
+        (case reaction
+          "arrow_up_small"
+          (do (decrement-active-todo-cursor channel (get-active-todolist channel))
+              (update-list-handler channel))
+          "arrow_down_small"
+          (do (increment-active-todo-cursor channel (get-active-todolist channel))
+              (update-list-handler channel))
+          "white_large_square"
+          (do (undone-active-todo channel (get-active-todolist channel))
+              (update-list-handler channel))
+          "ballot_box_with_check"
+          (do (done-active-todo channel (get-active-todolist channel))
+              (update-list-handler channel))
+          "negative_squared_cross_mark"
+          (do (discard-changes channel user-name)
+              (update-list-handler channel))
+          "white_check_mark"
+          (do (apply-changes channel user-name (get-active-todolist channel))
+              (update-list-handler channel))
+          nil)))))
 
 (defn handler
   [{:keys [channel user text ts]}]
