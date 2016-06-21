@@ -5,10 +5,12 @@
             :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [emiln/slacker "1.5.1"]
+                 [org.julienxx/clj-slack "0.5.4"]
                  [environ "1.0.0"]
                  [cheshire "5.5.0"]
                  [clojail "1.0.6"]
                  [robert/hooke "1.3.0"]
+                 [http-kit "2.1.19"]
                  [org.clojure/java.jdbc "0.6.0-alpha1"]
                  [org.xerial/sqlite-jdbc "3.8.11.2"]]
   :plugins [[lein-environ "1.0.0"]]
