@@ -109,9 +109,45 @@
   (set-active-todolist channel (todos (get-active-todo-user channel) 0))
   (set-active-todo-cursor channel 0))
 
+(def help-br
+  (clojure.string/join
+   "\n"
+   '("　")))
+
+(def help-header
+  (clojure.string/join
+   "\n"
+   `(
+     ":mag_right: todo は、シンプルなタスク管理機能を提供します"
+     ~help-br)))
+
+(def help-message
+  (clojure.string/join
+   "\n"
+   `(
+     ~help-header
+     ":large_orange_diamond: 使い方"
+     "`!todo [command] [args]`"
+     "*command*: コマンド名 (help|add|add-to|list|list-of)"
+     "*args*: コマンドに対する引数"
+     ~help-br
+     ":large_orange_diamond: より詳細なヘルプ"
+     ":small_orange_diamond: `!todo help`"
+     ":question: このヘルプです"
+     ":small_orange_diamond: `!todo add [description]`"
+     ":question: 自分のTODOリストにタスク `[description]` を追加します"
+     ":small_orange_diamond: `!todo add-to [user]`"
+     ":question: ユーザ `[user]` のTODOリストにタスク `[description]` を追加します"
+     ":small_orange_diamond: `!todo list`"
+     ":question: 自分のTODOリストを表示し、操作することができます"
+     ":small_orange_diamond: `!todo list-of [user]`"
+     ":question: ユーザ `[user]` のTODOリストを表示し、操作することができます")))
+
 (defn parse-args [text]
   (when text
     (or
+     (when-let [match (re-find #"^!todo (help)" text)]
+       (zipmap [:action] (rest match)))
      (when-let [match (re-find #"^!todo (add-to) ([^ ]+) (.+)" text)]
        (zipmap [:action :name :description] (rest match)))
      (when-let [match (re-find #"^!todo (add) (.+)" text)]
@@ -162,6 +198,10 @@
       ":tada: 全てのタスクが完了しました！"
       (format "%s\n　\n以下のボタンで操作することができます"
             formatted-todos))))
+
+(defn help-handler [channel]
+  (emit! :slacker.client/send-message channel
+         help-message))
 
 (defn list-handler [channel user]
   (when-let [todos (todos user 0)]
@@ -230,6 +270,7 @@
     (let [user (:name (util/user-by :id user))]
       (if-let [{:keys [action name description]} (parse-args text)]
       (case action
+        "help" (help-handler channel)
         "list" (list-handler channel user)
         "list-of" (list-handler channel name)
         "add" (add-handler channel user description)
