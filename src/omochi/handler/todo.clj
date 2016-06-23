@@ -12,6 +12,7 @@
                       "target/todo.sqlite")})
 
 (def ^:private active-todolist (ref {}))
+(def ^:private active-todo-user (ref {}))
 (def ^:private active-todo-cursor (ref {}))
 (def ^:private active-message-ts (ref {}))
 
@@ -37,6 +38,13 @@
 
 (defn get-active-todolist [channel]
   (get @active-todolist channel))
+
+(defn set-active-todo-user [channel user]
+  (dosync
+   (alter active-todo-user assoc channel user)))
+
+(defn get-active-todo-user [channel]
+  (get @active-todo-user channel))
 
 (defn set-active-todo-cursor [channel n]
   (dosync
@@ -90,15 +98,16 @@
   (let [updated-todos (map-indexed (partial undone-todo channel) todos)]
     (set-active-todolist channel updated-todos)))
 
-(defn discard-changes [channel user]
-  (set-active-todolist channel (todos user 0)))
+(defn discard-changes [channel]
+  (set-active-todolist channel (todos (get-active-todo-user channel) 0)))
 
-(defn apply-changes [channel user -todos]
+(defn apply-changes [channel -todos]
   (doall
    (map (fn [{id :id status :status}]
           (dbc/update! db :todos {:status status} ["id = ?" id]))
         -todos))
-  (set-active-todolist channel (todos user 0)))
+  (set-active-todolist channel (todos (get-active-todo-user channel) 0))
+  (set-active-todo-cursor channel 0))
 
 (defn parse-args [text]
   (when text
@@ -107,6 +116,8 @@
        (zipmap [:action :name :description] (rest match)))
      (when-let [match (re-find #"^!todo (add) (.+)" text)]
        (zipmap [:action :description] (rest match)))
+     (when-let [match (re-find #"^!todo (list-of) (.+)" text)]
+       (zipmap [:action :name] (rest match)))
      (when-let [match (re-find #"^!todo (list)" text)]
        (zipmap [:action] (rest match))))))
 
@@ -158,6 +169,7 @@
       (do
         (set-active-todolist channel todos)
         (set-active-todo-cursor channel 0)
+        (set-active-todo-user channel user)
         (let [message (list-message channel)
               {ok :ok channel :channel ts :ts}
               (chat/post-message @util/conn channel message {:as_user "true"})]
@@ -204,10 +216,10 @@
           (do (done-active-todo channel (get-active-todolist channel))
               (update-list-handler channel))
           "negative_squared_cross_mark"
-          (do (discard-changes channel user-name)
+          (do (discard-changes channel)
               (update-list-handler channel))
           "white_check_mark"
-          (do (apply-changes channel user-name (get-active-todolist channel))
+          (do (apply-changes channel (get-active-todolist channel))
               (update-list-handler channel))
           nil)))))
 
@@ -219,6 +231,7 @@
       (if-let [{:keys [action name description]} (parse-args text)]
       (case action
         "list" (list-handler channel user)
+        "list-of" (list-handler channel name)
         "add" (add-handler channel user description)
         "add-to" (add-to-handler channel user name description))))))
 
