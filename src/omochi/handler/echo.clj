@@ -1,6 +1,7 @@
 (ns omochi.handler.echo
   "Echo handler"
   (:require [omochi.util :as util]
+            [omochi.handler.clojure-playground :as clj]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
             [slacker.client :refer [emit!]]
@@ -274,7 +275,28 @@
         (emit! :slacker.client/send-message channel (str res)))
       (let [patterns (shuffle (dbc/query db ["SELECT * FROM `patterns`"]))]
         (when-let [match (find-by-pattern text patterns)]
-          (emit! :slacker.client/send-message channel
-                 (util/ensure-fresh-image
-                  (response-for match text))))))))
+          (let [response (response-for match text)]
+            (if (clj/should-eval? response)
+              ;; Pass to clojure playground
+              (clj/handler {:channel channel :user user :text response})
+              ;; Just post
+              (emit! :slacker.client/send-message channel
+                     (util/ensure-fresh-image response)))))))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
