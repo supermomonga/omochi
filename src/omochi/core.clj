@@ -33,6 +33,8 @@
   (handle :websocket-errored (fn [& args] (log/error args)))
   (handle :bot-disconnected connect) ;; Auto reconnect
   (handle :connect-bot-error (fn [& args]
+                               (log/error "Connection failed.")
+                               (log/warn args)
                                (Thread/sleep (* 1000 60 5))
                                (connect)))
   (connect)

@@ -4,7 +4,7 @@
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [emiln/slacker "1.5.1"]
+                 [emiln/slacker "1.6.0"]
                  [org.julienxx/clj-slack "0.5.4"]
                  [environ "1.0.0"]
                  [cheshire "5.5.0"]
