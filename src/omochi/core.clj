@@ -31,7 +31,18 @@
   (handle :websocket-closed (fn [& args] (log/warn args)))
   (handle :bot-disconnected (fn [& args] (log/warn args)))
   (handle :websocket-errored (fn [& args] (log/error args)))
-  (handle :bot-disconnected connect) ;; Auto reconnect
+  ;; Auto reconnect
+  (handle :bot-disconnected (fn [& args]
+                              (log/warn "Bot disconnected. try reconnect.")
+                              (Thread/sleep (* 1000 60 5))
+                              (connect)))
+  (handle :websocket-errored (fn [& args]
+                               (log/warn "Websocket errored. try reconnect.")
+                               (Thread/sleep (* 1000 60 5))
+                               (connect)))
+  (handle :websocket-closed (fn [& args]
+                              (log/warn "Websocket closed. try reconnect.")
+                              (connect)))
   (handle :connect-bot-error (fn [& args]
                                (log/error "Connection failed.")
                                (log/warn args)
