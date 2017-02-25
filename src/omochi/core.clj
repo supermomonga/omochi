@@ -35,11 +35,11 @@
   ;; Auto reconnect
   (handle :slacker.client/bot-disconnected (fn [& args]
                               (log/warn "Bot disconnected. try reconnect.")
-                              (Thread/sleep (* 1000 60 5))
+                              (Thread/sleep (* 1000 60 1))
                               (connect)))
   (handle :slacker.client/websocket-erred (fn [& args]
                                (log/warn "Websocket errored. try reconnect.")
-                               (Thread/sleep (* 1000 60 5))
+                               (Thread/sleep (* 1000 60 1))
                                (connect)))
   (handle :slacker.client/websocket-closed (fn [& args]
                               (log/warn "Websocket closed. try reconnect.")
@@ -48,7 +48,7 @@
   (handle :slacker.client/connect-bot-error (fn [& args]
                                (log/error "Connection failed.")
                                (log/warn args)
-                               (Thread/sleep (* 1000 60 5))
+                               (Thread/sleep (* 1000 60 1))
                                (connect)))
   (connect)
   (await! :kill))
