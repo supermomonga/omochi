@@ -28,22 +28,24 @@
   (handle :reaction-added omochi.handler.todo/reaction-toggled-handler)
   (handle :reaction-removed omochi.handler.todo/reaction-toggled-handler)
   (handle :message omochi.handler.emit-event/handler)
+  (handle :connect-bot-error (fn [& args] (log/warn args)))
   (handle :websocket-closed (fn [& args] (log/warn args)))
   (handle :bot-disconnected (fn [& args] (log/warn args)))
-  (handle :websocket-errored (fn [& args] (log/error args)))
+  (handle :websocket-erred (fn [& args] (log/error args)))
   ;; Auto reconnect
-  (handle :bot-disconnected (fn [& args]
+  (handle :slacker.client/bot-disconnected (fn [& args]
                               (log/warn "Bot disconnected. try reconnect.")
                               (Thread/sleep (* 1000 60 5))
                               (connect)))
-  (handle :websocket-errored (fn [& args]
+  (handle :slacker.client/websocket-erred (fn [& args]
                                (log/warn "Websocket errored. try reconnect.")
                                (Thread/sleep (* 1000 60 5))
                                (connect)))
-  (handle :websocket-closed (fn [& args]
+  (handle :slacker.client/websocket-closed (fn [& args]
                               (log/warn "Websocket closed. try reconnect.")
-                              (connect)))
-  (handle :connect-bot-error (fn [& args]
+                              ;; (connect)
+                              ))
+  (handle :slacker.client/connect-bot-error (fn [& args]
                                (log/error "Connection failed.")
                                (log/warn args)
                                (Thread/sleep (* 1000 60 5))
