@@ -8,7 +8,7 @@
             [clojure.java.jdbc :as dbc]))
 
 (def db (if (env :database-url)
-          {:connection-url (env :database-url)}
+          {:connection-uri (env :database-url)}
           {:dbtype "postgresql"
            :host (env :db-host)
            :port (env :db-port)
