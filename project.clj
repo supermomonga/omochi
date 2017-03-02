@@ -15,6 +15,7 @@
                  [org.postgresql/postgresql "9.4-1206-jdbc42"]]
   :plugins [[lein-environ "1.0.0"]]
   :min-lein-version "2.0.0"
+  :uberjar-name "omochi-standalone.jar"
   :profiles {:uberjar {:aot :all}}
   :bootclasspath true
   :main omochi.core)
