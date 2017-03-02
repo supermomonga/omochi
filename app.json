@@ -13,7 +13,7 @@
     "env": {
         "SLACK_API_TOKEN": {
             "description": "A secret key to access Slack API",
-            "generator": "secret"
+            "value": "xoxb-XXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXX"
         },
         "BOT_NAME": {
             "description": "The screen name of the bot",
