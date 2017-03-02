@@ -4,8 +4,9 @@ services:
     build: .
     environment:
       SLACK_API_TOKEN: your-api-token-here
-        DATABASE_URL: 'postgres://postgres:mysecretpassword@db:5432/postgres'
-      links:
+      BOT_NAME: omochi
+      DATABASE_URL: 'postgres://postgres:mysecretpassword@db:5432/postgres'
+    links:
         - db
   db:
     image: postgres:9.6-alpine
