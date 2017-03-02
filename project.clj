@@ -14,6 +14,7 @@
                  [org.clojure/java.jdbc "0.6.0-alpha1"]
                  [org.postgresql/postgresql "9.4-1206-jdbc42"]]
   :plugins [[lein-environ "1.0.0"]]
+  :min-lein-version "2.0.0"
   :profiles {:uberjar {:aot :all}}
   :bootclasspath true
   :main omochi.core)
