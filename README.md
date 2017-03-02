@@ -23,12 +23,14 @@ A slack bot written in Clojure to provide benri features.
 2. `docker-compose build`
 2. `docker-compose up`
 
-### Kubernetes
+### heroku
 
-1. Create `omochi-pod.json`. `omoshi-pod.json.sample` may helps you.
-2. Create GKE cluster and get credentials. (see GKE document)
-2. `kubectl create -f omochi-pod.json`
+Ensure to have following environment variables:
 
+- `SLACK_API_TOKEN`: Bot integration api key
+- `BOT_NAME`: Display name for bot
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/supermomonga/omochi)
 
 
 ## License

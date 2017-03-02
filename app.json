@@ -1,0 +1,23 @@
+{
+    "name": "omochi",
+    "description": "Omochi, the handy slack bot.",
+    "repository": "https://github.com/supermomonga/omochi",
+    "image": "heroku/clojure",
+    "addons": [ "heroku-postgresql" ],
+    "formation": {
+        "worker": {
+            "quantity": 1,
+            "size": "free"
+        }
+    },
+    "env": {
+        "SLACK_API_TOKEN": {
+            "description": "A secret key to access Slack API",
+            "generator": "secret"
+        },
+        "BOT_NAME": {
+            "description": "The screen name of the bot",
+            "value": "omochi"
+        }
+    }
+}
