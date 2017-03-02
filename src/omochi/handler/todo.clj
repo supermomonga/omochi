@@ -7,12 +7,14 @@
             [clj-slack.chat :as chat]
             [clojure.java.jdbc :as dbc]))
 
-(def db {:dbtype "postgresql"
-         :host (env :db-host)
-         :port (env :db-port)
-         :dbname (env :db-name)
-         :user (env :db-user)
-         :password (env :db-password)})
+(def db (if (env :database-url)
+          {:connection-url (env :database-url)}
+          {:dbtype "postgresql"
+           :host (env :db-host)
+           :port (env :db-port)
+           :dbname (env :db-name)
+           :user (env :db-user)
+           :password (env :db-password)}))
 
 (def ^:private active-todolist (ref {}))
 (def ^:private active-todo-user (ref {}))

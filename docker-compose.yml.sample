@@ -1,4 +1,11 @@
-jubot:
-  build: .
-  environment:
-    SLACK_API_TOKEN: your-api-token-here
+version: '2'
+services:
+  omochi:
+    build: .
+    environment:
+      SLACK_API_TOKEN: your-api-token-here
+        DATABASE_URL: 'postgres://postgres:mysecretpassword@db:5432/postgres'
+      links:
+        - db
+  db:
+    image: postgres:9.6-alpine
