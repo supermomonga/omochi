@@ -7,9 +7,12 @@
             [clj-slack.chat :as chat]
             [clojure.java.jdbc :as dbc]))
 
-(def db {:subprotocol "sqlite"
-         :subname (or (env :echo-db-path)
-                      "target/todo.sqlite")})
+(def db {:dbtype "postgresql"
+         :host (env :db-host)
+         :port (env :db-port)
+         :dbname (env :db-name)
+         :user (env :db-user)
+         :password (env :db-password)})
 
 (def ^:private active-todolist (ref {}))
 (def ^:private active-todo-user (ref {}))
@@ -19,16 +22,16 @@
 (defn db-init []
   (dbc/execute!
    db
-   ["CREATE TABLE IF NOT EXISTS `todos` (id integer PRIMARY KEY AUTOINCREMENT, status integer DEFAULT 0 NOT NULL, user text NOT NULL, description text NOT NULL);"]))
+   ["CREATE TABLE IF NOT EXISTS todos (id serial PRIMARY KEY, status integer DEFAULT 0 NOT NULL, username text NOT NULL, description text NOT NULL);"]))
 
 (defn add! [user description]
-  (dbc/insert! db :todos {:user user :description description}))
+  (dbc/insert! db :todos {:username user :description description}))
 
 (defn add-to! [from to description]
-  (dbc/insert! db :todos {:user to :description description}))
+  (dbc/insert! db :todos {:username to :description description}))
 
 (defn todos [user status]
-  (dbc/query db [(format "SELECT * FROM `todos` WHERE `user` = '%s' AND `status` = %s"
+  (dbc/query db [(format "SELECT * FROM todos WHERE username = '%s' AND status = %s"
                          user
                          status)]))
 

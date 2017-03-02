@@ -1,2 +1,8 @@
 {:dev {:env {:slack-api-token "your-api-token-here"
-             :bot-id "U0000000"}}}
+             :bot-name "U0000000"
+             :db-host "localhost"
+             :db-port 5432
+             :db-name "omochi"
+             :db-user "omochi"
+             :db-password "password"
+             }}}

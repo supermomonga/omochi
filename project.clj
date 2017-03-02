@@ -12,7 +12,7 @@
                  [robert/hooke "1.3.0"]
                  [http-kit "2.1.19"]
                  [org.clojure/java.jdbc "0.6.0-alpha1"]
-                 [org.xerial/sqlite-jdbc "3.8.11.2"]]
+                 [org.postgresql/postgresql "9.4-1206-jdbc42"]]
   :plugins [[lein-environ "1.0.0"]]
   :profiles {:uberjar {:aot :all}}
   :bootclasspath true

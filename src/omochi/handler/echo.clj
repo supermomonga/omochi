@@ -7,12 +7,15 @@
             [slacker.client :refer [emit!]]
             [clojure.java.jdbc :as dbc]))
 
-(def db {:subprotocol "sqlite"
-         :subname (or (env :echo-db-path)
-                      "target/echo.sqlite")})
+(def db {:dbtype "postgresql"
+         :host (env :db-host)
+         :port (env :db-port)
+         :dbname (env :db-name)
+         :user (env :db-user)
+         :password (env :db-password)})
 
 (defn db-init []
-  (dbc/execute! db ["CREATE TABLE IF NOT EXISTS `patterns` (name text PRIMARY KEY NOT NULL,pattern text NOT NULL,response text NOT NULL);"]))
+  (dbc/execute! db ["CREATE TABLE IF NOT EXISTS patterns (name text PRIMARY KEY NOT NULL,pattern text NOT NULL,response text NOT NULL);"]))
 
 (defn normalize-slack-formatted-escapes
   [text]
@@ -214,12 +217,12 @@
   (first (find-all-by-pattern text patterns)))
 
 (defn show [name]
-  (format-patterns (dbc/query db ["SELECT * FROM `patterns` WHERE name = ? LIMIT 1" name])))
+  (format-patterns (dbc/query db ["SELECT * FROM patterns WHERE name = ? LIMIT 1" name])))
 
 (defn list []
   (clojure.string/join ", "
                        (map #(format "`%s`" (:name %))
-                            (dbc/query db ["SELECT * FROM `patterns`"]))))
+                            (dbc/query db ["SELECT * FROM patterns"]))))
 
 (defn create! [name pattern response]
   (if (empty? (show name))
@@ -255,7 +258,7 @@
     :create (create! name pattern response)
     :show (show name)
     :list (list)
-    :find (format-patterns (find-all-by-pattern message (dbc/query db ["SELECT * FROM `patterns`"])))
+    :find (format-patterns (find-all-by-pattern message (dbc/query db ["SELECT * FROM patterns"])))
     :update (update! name pattern response)
     :delete (delete! name)))
 
@@ -273,7 +276,7 @@
                       (normalize-slack-format message)
                       help-topic)]
         (emit! :slacker.client/send-message channel (str res)))
-      (let [patterns (shuffle (dbc/query db ["SELECT * FROM `patterns`"]))]
+      (let [patterns (shuffle (dbc/query db ["SELECT * FROM patterns"]))]
         (when-let [match (find-by-pattern text patterns)]
           (let [response (response-for match text)]
             (if (clj/should-eval? response)
