@@ -1,1 +1,1 @@
-worker: java -cp target/omochi-0.1.0-SNAPSHOT-standalone.jar clojure.main -m omochi.core
+worker: java $JVM_OPTS -cp target/omochi-0.1.0-SNAPSHOT-standalone.jar clojure.main -m omochi.core
