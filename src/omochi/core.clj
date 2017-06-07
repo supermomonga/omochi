@@ -6,6 +6,7 @@
             [omochi.handler.yamabiko]
             [omochi.handler.echo]
             [omochi.handler.todo]
+            [omochi.handler.tofu]
             [omochi.handler.emit-event]
             [omochi.handler.clojure-playground]))
 
@@ -25,6 +26,7 @@
   (handle :message omochi.handler.clojure-playground/handler)
   (handle :message omochi.handler.echo/handler)
   (handle :message omochi.handler.todo/handler)
+  (handle :message omochi.handler.tofu/handler)
   (handle :reaction-added omochi.handler.todo/reaction-toggled-handler)
   (handle :reaction-removed omochi.handler.todo/reaction-toggled-handler)
   (handle :message omochi.handler.emit-event/handler)
