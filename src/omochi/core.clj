@@ -39,14 +39,6 @@
                               (log/warn "Bot disconnected. try reconnect.")
                               (Thread/sleep (* 1000 60 1))
                               (connect)))
-  (handle :slacker.client/websocket-erred (fn [& args]
-                               (log/warn "Websocket errored. try reconnect.")
-                               (Thread/sleep (* 1000 60 1))
-                               (connect)))
-  (handle :slacker.client/websocket-closed (fn [& args]
-                              (log/warn "Websocket closed. try reconnect.")
-                              ;; (connect)
-                              ))
   (handle :slacker.client/connect-bot-error (fn [& args]
                                (log/error "Connection failed.")
                                (log/warn args)
